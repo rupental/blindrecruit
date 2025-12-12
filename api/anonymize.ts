@@ -76,7 +76,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const startTime = Date.now();
 
   try {
+    console.log('📥 Received anonymize request');
     const { file, mimeType, filename } = await parseFormData(req);
+    console.log(`📄 File: ${filename}, Type: ${mimeType}, Size: ${file.length} bytes`);
 
     // Parse document to extract text
     const parsed = await parseDocument(file, mimeType);

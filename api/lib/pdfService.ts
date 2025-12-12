@@ -165,16 +165,14 @@ async function findTextPositions(
 
     const pdfjsLib = await import('pdfjs-dist');
     
-    // Configure worker
-    if (typeof window === 'undefined') {
-      try {
-        const workerPath = join(__dirname, '../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
-        pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
-      } catch {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-      }
-    } else {
+    // Configure worker - w Vercel serverless zawsze używamy CDN
+    // Lokalne ścieżki nie działają w środowisku serverless
+    try {
+      // W Vercel/serverless zawsze używamy CDN
       pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+    } catch (error) {
+      console.warn('Failed to set pdfjs worker, using default:', error);
+      // Fallback - pdfjs-dist może mieć domyślny worker
     }
     
     // pdfBuffer jest już kopią, konwertuj na Uint8Array
@@ -395,16 +393,12 @@ async function findImagePositions(
   try {
     const pdfjsLib = await import('pdfjs-dist');
     
-    // Configure worker for Node.js
-    if (typeof window === 'undefined') {
-      try {
-        const workerPath = join(__dirname, '../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
-        pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
-      } catch {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-      }
-    } else {
+    // Configure worker - w Vercel serverless zawsze używamy CDN
+    // Lokalne ścieżki nie działają w środowisku serverless
+    try {
       pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+    } catch (error) {
+      console.warn('Failed to set pdfjs worker for images, using default:', error);
     }
     
     // pdfBuffer jest już kopią ArrayBuffer, konwertuj na Uint8Array
