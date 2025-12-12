@@ -89,7 +89,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // If PDF, return anonymized PDF file
     if (mimeType === 'application/pdf') {
       // Convert Buffer to ArrayBuffer
-      const arrayBuffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
+      // Buffer needs to be converted to ArrayBuffer for pdfService
+      const arrayBuffer = new Uint8Array(file).buffer;
 
       const anonymizedPDF = await anonymizePDF(
         arrayBuffer,
@@ -111,9 +112,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (error) {
     console.error('Error in anonymize endpoint:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    // Log full error for debugging
+    console.error('Full error details:', {
+      message: errorMessage,
+      stack: errorStack,
+      error,
+    });
+    
     return res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error',
+      error: errorMessage,
     });
   }
 }

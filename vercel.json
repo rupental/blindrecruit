@@ -1,7 +1,13 @@
 {
   "functions": {
     "api/**/*.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/anonymize",
+      "destination": "/api/anonymize"
+    }
+  ]
 }
